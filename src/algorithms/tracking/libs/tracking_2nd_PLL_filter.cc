@@ -70,8 +70,8 @@ void Tracking_2nd_PLL_filter::initialize()
  */
 float Tracking_2nd_PLL_filter::get_carrier_nco(float PLL_discriminator)
 {
-    float carr_nco = d_old_carr_nco + (d_tau2_carr / d_tau1_carr) * (PLL_discriminator - d_old_carr_error) + (PLL_discriminator + d_old_carr_error) * (d_pdi_carr / (2.0 * d_tau1_carr));
-    //carr_nco = d_old_carr_nco + (d_tau2_carr/d_tau1_carr)*(PLL_discriminator - d_old_carr_error) + PLL_discriminator * (d_pdi_carr/d_tau1_carr);
+	float carr_nco = d_old_carr_nco + (d_tau2_carr / d_tau1_carr) * (PLL_discriminator - d_old_carr_error) + (PLL_discriminator + d_old_carr_error) * (d_pdi_carr / (2.0 * d_tau1_carr));
+    //      carr_nco = d_old_carr_nco + (d_tau2_carr / d_tau1_carr) * (PLL_discriminator - d_old_carr_error) + PLL_discriminator * (d_pdi_carr / d_tau1_carr);
     d_old_carr_nco = carr_nco;
     d_old_carr_error = PLL_discriminator;
     return carr_nco;

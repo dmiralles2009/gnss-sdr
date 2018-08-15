@@ -282,6 +282,7 @@ void GNSSFlowgraph::connect()
                 }
             catch (const std::exception& e)
                 {
+
                     LOG(WARNING) << "Can't connect sample counter";
                     LOG(ERROR) << e.what();
                     top_block_->disconnect_all();
@@ -425,6 +426,7 @@ void GNSSFlowgraph::connect()
                     if ((gnss_signal.compare("1C") == 0) or (gnss_signal.compare("2S") == 0) or (gnss_signal.compare("L5") == 0)) gnss_system = "GPS";
                     if ((gnss_signal.compare("1B") == 0) or (gnss_signal.compare("5X") == 0)) gnss_system = "Galileo";
                     if ((gnss_signal.compare("1G") == 0) or (gnss_signal.compare("2G") == 0)) gnss_system = "Glonass";
+                    if ((gnss_signal.compare("5C") == 0)) gnss_system = "Beidou";
                     Gnss_Signal signal_value = Gnss_Signal(Gnss_Satellite(gnss_system, sat), gnss_signal);
                     available_GNSS_signals_.remove(signal_value);
                     channels_.at(i)->set_signal(signal_value);
@@ -452,6 +454,7 @@ void GNSSFlowgraph::connect()
     for (unsigned int i = 0; i < channels_count_; i++)
         {
             LOG(INFO) << "Channel " << i << " assigned to " << channels_.at(i)->get_signal();
+
             if (channels_state_[i] == 1)
                 {
                     if (FPGA_enabled == false)
@@ -970,6 +973,10 @@ void GNSSFlowgraph::set_signals_list()
     // Removing satellites sharing same frequency number(1 and 5, 2 and 6, 3 and 7, 4 and 6, 11 and 15, 12 and 16, 14 and 18, 17 and 21
     std::set<unsigned int> available_glonass_prn = {1, 2, 3, 4, 9, 10, 11, 12, 18, 19, 20, 21, 24};
 
+    //!< Create the lists of BEIDOU satellites
+    //!< BeiDou-S3 satellites contain the modernized signals( PRN 31 33 34 32 35). BeiDou-3 contain the new satellites PRN 19 20 27 28 21 22 29 and 30
+    std::set<unsigned int> available_beidou_prn = {19, 21, 22, 27, 28, 30, 31, 33, 34, 32, 35, 29};
+
     std::string sv_list = configuration_->property("Galileo.prns", std::string(""));
 
     if (sv_list.length() > 0)
@@ -1033,6 +1040,21 @@ void GNSSFlowgraph::set_signals_list()
                     available_glonass_prn = tmp_set;
                 }
         }
+    sv_list = configuration_->property("Beidou.prns", std::string(""));
+
+    if (sv_list.length() > 0)
+	   {
+		   // Reset the available prns:
+		   std::set<unsigned int> tmp_set;
+		   boost::tokenizer<> tok(sv_list);
+		   std::transform(tok.begin(), tok.end(), std::inserter(tmp_set, tmp_set.begin()),
+			   boost::lexical_cast<unsigned int, std::string>);
+
+		   if (tmp_set.size() > 0)
+			   {
+				   available_beidou_prn = tmp_set;
+			   }
+	   }
 
     if (configuration_->property("Channels_1C.count", 0) > 0)
         {
@@ -1151,6 +1173,20 @@ void GNSSFlowgraph::set_signals_list()
                     available_GNSS_signals_.push_back(Gnss_Signal(
                         Gnss_Satellite(std::string("Glonass"), *available_gnss_prn_iter),
                         std::string("2G")));
+                }
+        }
+    if (configuration_->property("Channels_5C.count", 0) > 0)
+        {
+            /*
+             * Loop to create BEIDOU B2a signals
+             */
+            for (available_gnss_prn_iter = available_beidou_prn.cbegin();
+                 available_gnss_prn_iter != available_beidou_prn.cend();
+                 available_gnss_prn_iter++)
+                {
+                    available_GNSS_signals_.push_back(Gnss_Signal(
+                        Gnss_Satellite(std::string("Beidou"), *available_gnss_prn_iter),
+                        std::string("5C")));
                 }
         }
 }

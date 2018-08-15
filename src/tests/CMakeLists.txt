@@ -281,6 +281,7 @@ if(ENABLE_UNIT_TESTING_EXTRA)
       install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/gps_l2c_m_prn7_5msps.dat DESTINATION share/gnss-sdr/signal_samples)
       install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/Glonass_L1_CA_SIM_Fs_62Msps_4ms.dat DESTINATION share/gnss-sdr/signal_samples)
       # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/NT1065_GLONASS_L2_20160831_fs6625e6_if0e3_4ms.bin DESTINATION share/gnss-sdr/signal_samples)
+      # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/signal_samples/USRP_BDS_B2a_201805171115_fs_25e6_if0e3_ishort_200ms.bin DESTINATION share/gnss-sdr/signal_samples)
    endif(ENABLE_INSTALL_TESTS)
 endif(ENABLE_UNIT_TESTING_EXTRA)
 

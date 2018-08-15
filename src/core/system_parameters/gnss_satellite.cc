@@ -112,7 +112,7 @@ Gnss_Satellite& Gnss_Satellite::operator=(const Gnss_Satellite &rhs) {
 
 void Gnss_Satellite::set_system(const std::string& system_)
 {
-    // Set the satellite system {"GPS", "Glonass", "SBAS", "Galileo", "Compass"}
+    // Set the satellite system {"GPS", "Glonass", "SBAS", "Galileo", "Beidou"}
     std::set<std::string>::iterator it = system_set.find(system_);
 
     if (it != system_set.cend())
@@ -215,6 +215,18 @@ void Gnss_Satellite::set_PRN(unsigned int PRN_)
             if (PRN_ < 1 or PRN_ > 36)
                 {
                     DLOG(INFO) << "This PRN is not defined";
+                    PRN = 0;
+                }
+            else
+                {
+                    PRN = PRN_;
+                }
+        }
+    else if (system.compare("Beidou") == 0)
+        {
+            if (PRN_ < 1 or PRN_ > 63)
+                {
+                    DLOG(INFO) << "This PRN is not yet defined for Beidou B2a";
                     PRN = 0;
                 }
             else
@@ -381,7 +393,39 @@ std::string Gnss_Satellite::what_block(const std::string& system_, unsigned int 
                     block_ = std::string("Unknown");
                 }
         }
-
+    if (system_.compare("Beidou") == 0)
+            {
+    	//!< info from http://mgex.igs.org/IGS_MGEX_Status_BDS.php
+                switch (PRN_)
+                    {
+					case 19:
+						block_ = std::string("BEIDOU-3 M1"); //!<Slot B-7; launched 2017/11/05
+						break;
+					case 20:
+						block_ = std::string("BEIDOU-3 M2"); //!<Slot B-5; launched 2017/11/05
+						break;
+					case 21:
+						block_ = std::string("BEIDOU 3M5");  //!<Slot B-?; launched 2018/02/12
+						break;
+					case 22:
+						block_ = std::string("BEIDOU 3M6");  //!<Slot B-?; launched 2018/02/12
+						break;
+					case 27:
+						block_ = std::string("BEIDOU 3M3");  //!<Slot A-?; launched 2018/01/11
+						break;
+					case 28:
+						block_ = std::string("BEIDOU 3M4");  //!<Slot A-?; launched 2018/01/11
+						break;
+					case 29:
+						block_ = std::string("BEIDOU 3M7");  //!<Slot A-?; launched 2018/03/29
+						break;
+                	case 30:
+						block_ = std::string("BEIDOU 3M8");  //!<Slot A-?; launched 2018/03/29
+						break;
+					default:
+                        block_ = std::string("Unknown");
+                    }
+            }
     if (system_.compare("Glonass") == 0)
         {
             // Info from http://www.sdcm.ru/smglo/grupglo?version=eng&site=extern

@@ -75,7 +75,6 @@ GpsL5iPcpsAcquisition::GpsL5iPcpsAcquisition(
     acq_parameters.dump_filename = dump_filename_;
     //--- Find number of samples per spreading code -------------------------
     code_length_ = static_cast<unsigned int>(std::round(static_cast<double>(fs_in_) / (GPS_L5i_CODE_RATE_HZ / static_cast<double>(GPS_L5i_CODE_LENGTH_CHIPS))));
-
     vector_length_ = code_length_;
 
     if (bit_transition_flag_)

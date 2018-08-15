@@ -34,6 +34,7 @@ set(ACQ_ADAPTER_SOURCES
     galileo_e5a_pcps_acquisition.cc
     glonass_l1_ca_pcps_acquisition.cc
     glonass_l2_ca_pcps_acquisition.cc
+    beidou_b2ad_pcps_acquisition.cc
 )
 
 if(ENABLE_FPGA)

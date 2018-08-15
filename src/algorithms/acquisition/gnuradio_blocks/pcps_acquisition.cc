@@ -553,6 +553,7 @@ void pcps_acquisition::acquisition_core(unsigned long int samp_count)
                                     send_positive_acquisition();
                                     d_step_two = false;
                                     d_state = 0;  // Positive acquisition
+
                                 }
                             else
                                 {
@@ -564,6 +565,7 @@ void pcps_acquisition::acquisition_core(unsigned long int samp_count)
                         {
                             send_positive_acquisition();
                             d_state = 0;  // Positive acquisition
+
                         }
                 }
             else if (d_well_count == acq_parameters.max_dwells)
@@ -586,6 +588,8 @@ void pcps_acquisition::acquisition_core(unsigned long int samp_count)
                                     send_positive_acquisition();
                                     d_step_two = false;
                                     d_state = 0;  // Positive acquisition
+
+
                                 }
                             else
                                 {
@@ -597,6 +601,7 @@ void pcps_acquisition::acquisition_core(unsigned long int samp_count)
                         {
                             send_positive_acquisition();
                             d_state = 0;  // Positive acquisition
+
                         }
                 }
             else

@@ -48,6 +48,8 @@
 #include "gps_l2c_signal.h"
 #include "GPS_L5.h"
 #include "gps_l5_signal.h"
+#include "BEIDOU_B2A.h"
+#include "beidou_b2a_signal_processing.h"
 #include <boost/lexical_cast.hpp>
 #include <glog/logging.h>
 #include <gnuradio/io_signature.h>
@@ -101,6 +103,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(dllpllconf_t conf_) : gr::block("dl
     map_signal_pretty_name["2G"] = "L2 C/A";
     map_signal_pretty_name["5X"] = "E5a";
     map_signal_pretty_name["L5"] = "L5";
+    map_signal_pretty_name["5C"] = "B2a";
 
     signal_pretty_name = map_signal_pretty_name[signal_type];
 
@@ -239,6 +242,48 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(dllpllconf_t conf_) : gr::block("dl
                     d_symbols_per_bit = 0;
                 }
         }
+    else if (trk_parameters.system == 'C')
+            {
+                systemName = "Beidou";
+			if (signal_type.compare("5C") == 0)
+					{
+						d_signal_carrier_freq = BEIDOU_B2a_FREQ_HZ;
+						d_code_period = BEIDOU_B2ad_PERIOD;
+						d_code_chip_rate = BEIDOU_B2ad_CODE_RATE_HZ;
+						d_symbols_per_bit = BEIDOU_B2a_SAMPLES_PER_SYMBOL;
+						d_correlation_length_ms = 1;
+						d_code_samples_per_chip = 1;
+						d_code_length_chips = static_cast<unsigned int>(BEIDOU_B2ad_CODE_LENGTH_CHIPS);
+						d_secondary = true;
+						if (trk_parameters.track_pilot)
+							{
+								d_secondary_code_length = static_cast<unsigned int>(BEIDOU_B2ap_SECONDARY_CODE_LENGTH);
+								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ap_SECONDARY_CODE_STR);
+								signal_pretty_name = signal_pretty_name + "Pilot";
+								interchange_iq = true;
+							}
+						else
+							{
+								d_secondary_code_length = static_cast<unsigned int>(BEIDOU_B2ad_SECONDARY_CODE_LENGTH);
+								d_secondary_code_string = const_cast<std::string *>(&BEIDOU_B2ad_SECONDARY_CODE_STR);
+								signal_pretty_name = signal_pretty_name + "Data";
+								interchange_iq = false;
+							}
+					}
+			else
+					{
+						LOG(WARNING) << "Invalid Signal argument when instantiating tracking blocks";
+						std::cout << "Invalid Signal argument when instantiating tracking blocks" << std::endl;
+						d_correlation_length_ms = 1;
+						d_secondary = false;
+						interchange_iq = false;
+						d_signal_carrier_freq = 0.0;
+						d_code_period = 0.0;
+						d_code_length_chips = 0;
+						d_code_samples_per_chip = 0;
+						d_symbols_per_bit = 0;
+					}
+            }
     else
         {
             LOG(WARNING) << "Invalid System argument when instantiating tracking blocks";
@@ -405,11 +450,14 @@ void dll_pll_veml_tracking::start_tracking()
     double T_prn_true_samples = T_prn_true_seconds * trk_parameters.fs_in;
     double T_prn_diff_seconds = T_prn_true_seconds - T_prn_mod_seconds;
     double N_prn_diff = acq_trk_diff_seconds / T_prn_true_seconds;
-    double corrected_acq_phase_samples = std::fmod(d_acq_code_phase_samples + T_prn_diff_seconds * N_prn_diff * trk_parameters.fs_in, T_prn_true_samples);
+    //!<TODO Sign was reversed here so that 10.23 MHz signals can step properly into tracking. Double check that this works with all FE's
+    double corrected_acq_phase_samples = std::fmod(d_acq_code_phase_samples - T_prn_diff_seconds * N_prn_diff * trk_parameters.fs_in, T_prn_true_samples);
+
     if (corrected_acq_phase_samples < 0.0)
         {
             corrected_acq_phase_samples += T_prn_mod_samples;
         }
+
     double delay_correction_samples = d_acq_code_phase_samples - corrected_acq_phase_samples;
 
     d_acq_code_phase_samples = corrected_acq_phase_samples;
@@ -441,6 +489,20 @@ void dll_pll_veml_tracking::start_tracking()
             else
                 {
                     gps_l5i_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
+                }
+        }
+    else if (systemName.compare("Beidou") == 0 and signal_type.compare("5C") == 0)
+        {
+            if (trk_parameters.track_pilot)
+                {
+                    beidou_b2ap_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
+                    beidou_b2ad_code_gen_float(d_data_code, d_acquisition_gnss_synchro->PRN);
+                    d_Prompt_Data[0] = gr_complex(0.0, 0.0);
+                    correlator_data_cpu.set_local_code_and_taps(d_code_length_chips, d_data_code, d_prompt_data_shift);
+                }
+            else
+                {
+            		beidou_b2ad_code_gen_float(d_tracking_code, d_acquisition_gnss_synchro->PRN);
                 }
         }
     else if (systemName.compare("Galileo") == 0 and signal_type.compare("1B") == 0)
@@ -725,7 +787,7 @@ void dll_pll_veml_tracking::run_dll_pll()
         }
     // Code discriminator filter
     d_code_error_filt_chips = d_code_loop_filter.get_code_nco(d_code_error_chips);  // [chips/second]
-}
+    }
 
 
 void dll_pll_veml_tracking::clear_tracking_vars()
@@ -1220,6 +1282,7 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                 // Signal alignment (skip samples until the incoming signal is aligned with local replica)
                 unsigned long int acq_to_trk_delay_samples = d_sample_counter - d_acq_sample_stamp;
                 double acq_trk_shif_correction_samples = static_cast<double>(d_current_prn_length_samples) - std::fmod(static_cast<double>(acq_to_trk_delay_samples), static_cast<double>(d_current_prn_length_samples));
+                //int samples_offset = d_acq_code_phase_samples;
                 int samples_offset = std::round(d_acq_code_phase_samples + acq_trk_shif_correction_samples);
                 if (samples_offset < 0)
                     {

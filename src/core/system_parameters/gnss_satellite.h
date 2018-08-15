@@ -68,7 +68,7 @@ private:
     void set_system(const std::string& system);  // Sets the satellite system {"GPS", "GLONASS", "SBAS", "Galileo", "Beidou"}.
     void set_PRN(unsigned int PRN);              // Sets satellite's PRN
     void set_block(const std::string& system_, unsigned int PRN_);
-    std::set<std::string> system_set;  // = {"GPS", "GLONASS", "SBAS", "Galileo", "Compass"};
+    std::set<std::string> system_set;  // = {"GPS", "GLONASS", "SBAS", "Galileo", "Beidou"};
     void reset();
 };
 #endif
