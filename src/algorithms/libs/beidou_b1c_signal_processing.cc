@@ -795,7 +795,7 @@ void beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float
                 }
             else
                 {
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeValueIndex], 1.0 - 2.0 * imaginary_code_span[_codeValueIndex - 1]);  //repeat the chip -> upsample
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeValueIndex], 1.0 - 2.0 * imaginary_code_span[_codeValueIndex]);  //repeat the chip -> upsample
                 }
         }           
     volk_gnsssdr_free(real_code);
@@ -873,7 +873,7 @@ void beidou_b1c_code_gen_complex_sampled_boc(gsl::span<std::complex<float>> _des
                 }
             else
                 {
-                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeValueIndex], 1.0 - 2.0 * imaginary_code_span_pilot[_codeValueIndex - 1]);  //repeat the chip -> upsample
+                    _dest[i] = std::complex<float>(1.0 - 2.0 * real_code_span[_codeValueIndex], 1.0 - 2.0 * imaginary_code_span_pilot[_codeValueIndex]);  //repeat the chip -> upsample
                 }
         }           
     volk_gnsssdr_free(real_code_data);
