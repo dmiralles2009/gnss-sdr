@@ -39,6 +39,8 @@
 #include "acquisition_interface.h"  // for AcquisitionInterface
 #include "array_signal_conditioner.h"
 #include "beamformer_filter.h"
+#include "beidou_b1c_dll_pll_tracking.h"
+#include "beidou_b1c_pcps_acquisition.h"
 #include "beidou_b1i_dll_pll_tracking.h"
 #include "beidou_b1i_pcps_acquisition.h"
 #include "beidou_b1i_telemetry_decoder.h"
@@ -284,6 +286,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetObservables(const std::
     Glonass_channels += configuration->property("Channels_2G.count", 0);
     unsigned int Beidou_channels = configuration->property("Channels_B1.count", 0);
     Beidou_channels += configuration->property("Channels_B3.count", 0);
+    Beidou_channels += configuration->property("Channels_C1.count", 0);
     unsigned int extra_channels = 1;  // For monitor channel sample counter
     return GetBlock(configuration, "Observables", implementation,
         Galileo_channels +
@@ -312,6 +315,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetPVT(const std::shared_p
     Glonass_channels += configuration->property("Channels_2G.count", 0);
     unsigned int Beidou_channels = configuration->property("Channels_B1.count", 0);
     Beidou_channels += configuration->property("Channels_B3.count", 0);
+    Beidou_channels += configuration->property("Channels_C1.count", 0);
     return GetBlock(configuration, "PVT", implementation,
         Galileo_channels + GPS_channels + Glonass_channels + Beidou_channels, 0);
 }
@@ -920,6 +924,73 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetChannel_B3(
 }
 
 
+//********* BEIDOU B1C  CHANNEL *****************
+std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetChannel_C1(
+    const std::shared_ptr<ConfigurationInterface>& configuration,
+    const std::string& acq, const std::string& trk, const std::string& tlm, int channel,
+    gr::msg_queue::sptr queue)
+{
+    std::stringstream stream;
+    stream << channel;
+    std::string id = stream.str();
+    LOG(INFO) << "Instantiating Channel " << id << " with Acquisition Implementation: "
+              << acq << ", Tracking Implementation: " << trk << ", Telemetry Decoder implementation: " << tlm;
+    std::string aux = configuration->property("Acquisition_C1" + std::to_string(channel) + ".implementation", std::string("W"));
+    std::string appendix1;
+    if (aux != "W")
+        {
+            appendix1 = std::to_string(channel);
+        }
+    else
+        {
+            appendix1 = "";
+        }
+    aux = configuration->property("Tracking_C1" + std::to_string(channel) + ".implementation", std::string("W"));
+    std::string appendix2;
+    if (aux != "W")
+        {
+            appendix2 = std::to_string(channel);
+        }
+    else
+        {
+            appendix2 = "";
+        }
+    aux = configuration->property("TelemetryDecoder_C1" + std::to_string(channel) + ".implementation", std::string("W"));
+    std::string appendix3;
+    if (aux != "W")
+        {
+            appendix3 = std::to_string(channel);
+        }
+    else
+        {
+            appendix3 = "";
+        }
+    // Automatically detect input data type
+    std::shared_ptr<InMemoryConfiguration> config;
+    config = std::make_shared<InMemoryConfiguration>();
+    std::string default_item_type = "gr_complex";
+    std::string acq_item_type = configuration->property("Acquisition_C1" + appendix1 + ".item_type", default_item_type);
+    std::string trk_item_type = configuration->property("Tracking_C1" + appendix2 + ".item_type", default_item_type);
+    if (acq_item_type != trk_item_type)
+        {
+            LOG(ERROR) << "Acquisition and Tracking blocks must have the same input data type!";
+        }
+    config->set_property("Channel.item_type", acq_item_type);
+
+    std::unique_ptr<AcquisitionInterface> acq_ = GetAcqBlock(configuration, "Acquisition_C1" + appendix1, acq, 1, 0);
+    std::unique_ptr<TrackingInterface> trk_ = GetTrkBlock(configuration, "Tracking_C1" + appendix2, trk, 1, 1);
+    std::unique_ptr<TelemetryDecoderInterface> tlm_ = GetTlmBlock(configuration, "TelemetryDecoder_C1" + appendix3, tlm, 1, 1);
+
+    std::unique_ptr<GNSSBlockInterface> channel_(new Channel(configuration.get(), channel,
+        std::move(acq_),
+        std::move(trk_),
+        std::move(tlm_),
+        "Channel", "C1", std::move(queue)));
+
+    return channel_;
+}
+
+
 std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFactory::GetChannels(
     const std::shared_ptr<ConfigurationInterface>& configuration, const gr::msg_queue::sptr queue)  // NOLINT(performance-unnecessary-value-param)
 {
@@ -939,6 +1010,7 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
     unsigned int Channels_L5_count = configuration->property("Channels_L5.count", 0);
     unsigned int Channels_B1_count = configuration->property("Channels_B1.count", 0);
     unsigned int Channels_B3_count = configuration->property("Channels_B3.count", 0);
+    unsigned int Channels_C1_count = configuration->property("Channels_C1.count", 0);
 
     unsigned int total_channels = Channels_1C_count +
                                   Channels_1B_count +
@@ -948,7 +1020,8 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
                                   Channels_5X_count +
                                   Channels_L5_count +
                                   Channels_B1_count +
-                                  Channels_B3_count;
+                                  Channels_B3_count +
+                                  Channels_C1_count;
 
     std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> channels(new std::vector<std::unique_ptr<GNSSBlockInterface>>(total_channels));
     try
@@ -1211,6 +1284,35 @@ std::unique_ptr<std::vector<std::unique_ptr<GNSSBlockInterface>>> GNSSBlockFacto
 
                     // Push back the channel to the vector of channels
                     channels->at(channel_absolute_id) = GetChannel_B3(configuration,
+                        acquisition_implementation_specific,
+                        tracking_implementation_specific,
+                        telemetry_decoder_implementation_specific,
+                        channel_absolute_id,
+                        queue);
+                    channel_absolute_id++;
+                }
+
+            //**************** BEIDOU B1C  CHANNELS **********************
+            LOG(INFO) << "Getting " << Channels_C1_count << " BEIDOU B1C channels";
+            tracking_implementation = configuration->property("Tracking_C1.implementation", default_implementation);
+            telemetry_decoder_implementation = configuration->property("TelemetryDecoder_C1.implementation", default_implementation);
+            acquisition_implementation = configuration->property("Acquisition_C1.implementation", default_implementation);
+            for (unsigned int i = 0; i < Channels_C1_count; i++)
+                {
+                    //(i.e. Acquisition_1C0.implementation=xxxx)
+                    std::string acquisition_implementation_specific = configuration->property(
+                        "Acquisition_C1" + std::to_string(channel_absolute_id) + ".implementation",
+                        acquisition_implementation);
+                    //(i.e. Tracking_1C0.implementation=xxxx)
+                    std::string tracking_implementation_specific = configuration->property(
+                        "Tracking_C1" + std::to_string(channel_absolute_id) + ".implementation",
+                        tracking_implementation);
+                    std::string telemetry_decoder_implementation_specific = configuration->property(
+                        "TelemetryDecoder_C1" + std::to_string(channel_absolute_id) + ".implementation",
+                        telemetry_decoder_implementation);
+
+                    // Push back the channel to the vector of channels
+                    channels->at(channel_absolute_id) = GetChannel_C1(configuration,
                         acquisition_implementation_specific,
                         tracking_implementation_specific,
                         telemetry_decoder_implementation_specific,
@@ -1721,6 +1823,12 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
+    else if (implementation == "BEIDOU_B1C_PCPS_Acquisition")
+        {
+            std::unique_ptr<AcquisitionInterface> block_(new BeidouB1cPcpsAcquisition(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
 
     // TRACKING BLOCKS -------------------------------------------------------------
     else if (implementation == "GPS_L1_CA_DLL_PLL_Tracking")
@@ -1855,6 +1963,12 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
+    else if (implementation == "BEIDOU_B1C_DLL_PLL_Tracking")
+        {
+            std::unique_ptr<GNSSBlockInterface> block_(new BeidouB1cDllPllTracking(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
     // TELEMETRY DECODERS ----------------------------------------------------------
     else if (implementation == "GPS_L1_CA_Telemetry_Decoder")
         {
@@ -1916,7 +2030,7 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-
+    //TODO add TELEMETRY DECODERS block for Beidou B1C here.
     // OBSERVABLES -----------------------------------------------------------------
     else if ((implementation == "Hybrid_Observables") || (implementation == "GPS_L1_CA_Observables") || (implementation == "GPS_L2C_Observables") ||
              (implementation == "Galileo_E5A_Observables"))
@@ -2117,6 +2231,12 @@ std::unique_ptr<AcquisitionInterface> GNSSBlockFactory::GetAcqBlock(
                 out_streams));
             block = std::move(block_);
         }
+    else if (implementation.compare("BEIDOU_B1C_PCPS_Acquisition") == 0)
+        {
+            std::unique_ptr<AcquisitionInterface> block_(new BeidouB1cPcpsAcquisition(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
     else
         {
             // Log fatal. This causes execution to stop.
@@ -2267,7 +2387,12 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
                 out_streams));
             block = std::move(block_);
         }
-
+    else if (implementation == "BEIDOU_B1C_DLL_PLL_Tracking")
+        {
+            std::unique_ptr<TrackingInterface> block_(new BeidouB1cDllPllTracking(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
     else
         {
             // Log fatal. This causes execution to stop.
@@ -2346,7 +2471,7 @@ std::unique_ptr<TelemetryDecoderInterface> GNSSBlockFactory::GetTlmBlock(
                 out_streams));
             block = std::move(block_);
         }
-
+    //TODO add for Beidou B1C here.
     else
         {
             // Log fatal. This causes execution to stop.

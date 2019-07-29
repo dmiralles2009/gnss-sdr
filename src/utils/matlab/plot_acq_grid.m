@@ -27,11 +27,11 @@
 %
 
 %% Configuration
-path = '/home/dmiralles/Documents/gnss-sdr/';
-file = 'bds_acq';
-sat = 6;
+path = '/home/dmiralles/Documents/gnss-sdr/build/';
+file = 'bds_b1c_acq';
+sat = 24;
 channel = 0;
-execution = 4;
+execution = 3;
 % Signal:
 %     1 GPS  L1
 %     2 GPS  L2M
@@ -43,15 +43,16 @@ execution = 4;
 %     8 BDS. B1
 %     9 BDS. B3
 %    10 BDS. B2a
+%    11 BDS. B1C
 
-signal_type = 8;
+signal_type = 11;
 
 %%% True for light grid representation
 lite_view = true;
 
 %%% If lite_view, it sets the number of samples per chip in the graphical representation
 n_samples_per_chip = 3;
-d_samples_per_code = 25000;
+d_samples_per_code = 250000;
 
 %% Load data
 
@@ -96,6 +97,10 @@ switch(signal_type)
         n_chips = 10230;
         system = 'C';
         signal = '5C';
+    case 11
+        n_chips = 10230;
+        system = 'C';
+        signal = 'C1';
 end
 filename = [path file '_' system '_' signal '_ch_' num2str(channel) '_' num2str(execution) '_sat_' num2str(sat) '.mat'];
 load(filename);
