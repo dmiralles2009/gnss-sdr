@@ -66,6 +66,15 @@ const int32_t BEIDOU_B1Cp_SECONDARY_CODE_LENGTH_CHIPS = 1800;  // Each secondary
 const int32_t BEIDOU_B1C_WEIL_N = 10243;
 const int32_t BEIDOU_B1C_WEIL_N_SECONDARY = 3607;
 
+
+const double BEIDOU_CNAV1_PI = 3.1415926535898;              //BeiDou CNAV1 Pi
+const int32_t BEIDOU_CNAV1_FRAME_SYMBOLS = 1800;             //Number of symbols per string in the CNAV1 message. Include all 3 Subfarames
+const int32_t BEIDOU_CNAV1_DATA_BITS = 878;
+const int32_t BEIDOU_CNAV1_CRC_BITS = 24;
+const int32_t BEIDOU_CNAV1_CRC_SEED = 0;
+const int32_t BEIDOU_CNAV1_CRC_POLY = 0x1864CFB;
+
+
 //!====================================PRIMARY CODE PARAMETERS OF B1C DATA COMPONENTS=============================================
 //!Phase difference(w) table data for Data Component
 const int32_t BEIDOU_B1Cd_PHASE_DIFF[BEIDOU_B1C_NBR_SATS] = {
@@ -236,6 +245,216 @@ const std::string BEIDOU_B1Cp_SECONDARY_CODE[BEIDOU_B1C_NBR_SATS] = {
 "111110111010000001011101111100100001100010000001001001101010101111011000001100001011100001010110110110001010100100010011011110010110110101111110111011110101000001010010000011111111100011000000000010000000110010100100001001111100110111000100000110000010010100011110000000000100101101000001101111000101010101100000000110100100101100011000001001001011101011011010101101010110110000110101110010011100100101000101010111010001111111001001011010010111000111000110110001111110010111010110011000011011000100001111010100111001011001100010010110001110101001001100101000001111100011101010011011101001010100101011101000111110010101010001000100011000010100011111110101000010000111011011000101010101110100001100111001111110100110011110110000010101111110001011010000111001101110110100100100111111000011011111010110001111111111011011100000100011010000011010110110101101110011010101011000101101111000001110111010100111101110010100110100001010111010000000110101010111001111010011100001111110111011000001001111011101100110101010001100111110111101011000101001110001000100111110010100001100011100001110011101000000111100100100001100111111011111111001100001110111101111000101101110100010111110010001000100010111110100000100110011100100101101010110100100011101110111000111110010000110100101001101011110100010000111101001101100100111010110110100110011001101110100010110010001001000011010011011100010010000101001111111011000011000100001111010101110101111101100111111010101011010001100001110010010111011000010100000001001010001010000101100011111000110000100001101100100110010001111000011110011000101100111100010001100011110101110100111011010100100100010101000100100000000101100100001010010011111000011100101001001010101011111110010111111001001110110110010110100101101001111001011110011111001100111010100011111011000100110010111",
 "010100111010100100000111111110101111110010100011001011100011000110101010010100011110111101110010110110100110110000000111011101011001001011110111001100010001010000101011010001101000111000110110011001110101101011001100111110110111111010101110100111011100001111000110010001001011101001110001110000111101010111100101100111101001010100001110000001000110001111011100100000010000001001000011011001010001110000011110101010110000010000111000010100100101011110111110100110111001010110111111001100100000001111001111010101000111111100001101011110011111010001011100110000111110010001011010100000111100010111100110100010101001001000000010000101110011001110000111110100100011011101001101111100000101100111010001010100000011000001010101111110110110100110011110010110111000011111000010101101011111011101101001010011111011001110011010011110110100010001001011011001111111111101100100111011110110100000111000101010011100011000101001110110010010111011101111111010000110001101001001100011010011011001000110001111001011001001011011011011010001001100001111010000101101000001010010010001110011010100110100000101011001111111001000010111100110010000011000011000110110000110001111000011010111111101111101111100010000101000101011111010110111101000010010000110010110111000100110010010000001111100111100111101111000101110011000110111010101101111001001100011010000111100101100110110101111010010000110001110101000100010011001011101111011100111011111000000010010011011100011110011111001010111101111110011001000010110010010000110011001011110000000010001100100010110111001000111011100000111000101101010011110101101011000011100000001110001011100011100100011100011101100010100100100010001000000101000010000010001000000011111100010111000011001001100001001101010101001001011110011001011010100110000111001000111100000010111000101001010001110"
 };
+
+
+// BEIDOU CNAV1 NAVIGATION MESSAGE STRUCTURE
+// NAVIGATION MESSAGE FIELDS POSITIONS
+
+
+//BIT ALLOCATION FOR B-CNAV1 SUBFRAME 1
+
+
+const std::vector<std::pair<int32_t, int32_t>> PRN({{1, 6}});
+const std::vector<std::pair<int32_t, int32_t>> SOH({{7, 8}});
+
+
+//BIT ALLOCATION FOR B-CNAV1 SUBFRAME 2
+
+
+const std::vector<std::pair<int32_t, int32_t>> WN_S_2({{1, 13}});
+const std::vector<std::pair<int32_t, int32_t>> HOW_S_2({{14, 8}});
+const std::vector<std::pair<int32_t, int32_t>> IODC_S_2({{22, 10}});
+const std::vector<std::pair<int32_t, int32_t>> IODE_S_2({{32, 8}});
+// Ephemeris I (203 bits)
+const std::vector<std::pair<int32_t, int32_t>> t_oe_S_2({{40, 11}});
+const std::vector<std::pair<int32_t, int32_t>> SatType_S_2({{51, 2}});
+const std::vector<std::pair<int32_t, int32_t>> dA_S_2({{53, 26}});
+const std::vector<std::pair<int32_t, int32_t>> A_dot_S_2({{79, 25}});
+const std::vector<std::pair<int32_t, int32_t>> dn_0_S_2({{104, 17}});
+const std::vector<std::pair<int32_t, int32_t>> dn_0_dot_S_2({{121, 23}});
+const std::vector<std::pair<int32_t, int32_t>> M_0_S_2({{144, 33}});
+const std::vector<std::pair<int32_t, int32_t>> e_S_2({{177, 33}});
+const std::vector<std::pair<int32_t, int32_t>> omega_S_2({{210, 33}});
+// Ephemeris I End 
+// Ephemeris II (222 bits)
+const std::vector<std::pair<int32_t, int32_t>> Omega_0_S_2({{243, 33}});
+const std::vector<std::pair<int32_t, int32_t>> i_0_S_2({{276, 33}});
+const std::vector<std::pair<int32_t, int32_t>> Omega_dot_S_2({{309, 19}});
+const std::vector<std::pair<int32_t, int32_t>> i_0_dot_S_2({{328, 15}});
+const std::vector<std::pair<int32_t, int32_t>> C_IS_S_2({{343, 16}});
+const std::vector<std::pair<int32_t, int32_t>> C_IC_S_2({{359, 16}});
+const std::vector<std::pair<int32_t, int32_t>> C_RS_S_2({{375, 24}});
+const std::vector<std::pair<int32_t, int32_t>> C_RC_S_2({{399, 24}});
+const std::vector<std::pair<int32_t, int32_t>> C_US_S_2({{423, 21}});
+const std::vector<std::pair<int32_t, int32_t>> C_UC_S_2({{444, 21}});
+// Ephemeris II End
+// Clock Correction Parameters (69 bits)
+const std::vector<std::pair<int32_t, int32_t>> t_oc_S_2({{465, 11}});
+const std::vector<std::pair<int32_t, int32_t>> a_0_S_2({{476, 25}});
+const std::vector<std::pair<int32_t, int32_t>> a_1_S_2({{501, 22}});
+const std::vector<std::pair<int32_t, int32_t>> a_2_S_2({{523, 11}});
+// Clock Correction Parameters End
+const std::vector<std::pair<int32_t, int32_t>> T_GDB2ap_S_2({{534, 12}});
+const std::vector<std::pair<int32_t, int32_t>> ISC_B1Cd_S_2({{546, 12}});
+const std::vector<std::pair<int32_t, int32_t>> T_GDB1Cp_S_2({{558, 12}});
+const std::vector<std::pair<int32_t, int32_t>> Rev_S_2({{570, 7}});
+const std::vector<std::pair<int32_t, int32_t>> CRC_S_2({{577, 24}});
+
+
+//BIT ALLOCATION FOR B-CNAV1 SUBFRAME 3
+
+
+// Common
+const std::vector<std::pair<int32_t, int32_t>> CRC({{241, 24}});
+
+
+// Type 1 (264 bits)
+const std::vector<std::pair<int32_t, int32_t>> PageId_1({{1, 6}});
+const std::vector<std::pair<int32_t, int32_t>> HS_1({{7, 2}});
+const std::vector<std::pair<int32_t, int32_t>> DIF_1({{9, 1}});
+const std::vector<std::pair<int32_t, int32_t>> SIF_1({{10, 1}});
+const std::vector<std::pair<int32_t, int32_t>> AIF_1({{11, 1}});
+const std::vector<std::pair<int32_t, int32_t>> SISMAI_1({{12, 4}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_oe_1({{16, 5}});
+// SISAI_OC (22 bits)
+const std::vector<std::pair<int32_t, int32_t>> t_op_1({{21, 11}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_ocb_1({{32, 5}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_oc1_1({{37, 3}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_oc2_1({{40, 3}});
+// SISAI_OC End
+// Ionospheric Delay Correction Model Parameters (74 bits)
+const std::vector<std::pair<int32_t, int32_t>> alpha_1_1({{43, 10}});
+const std::vector<std::pair<int32_t, int32_t>> alpha_2_1({{53, 8}});
+const std::vector<std::pair<int32_t, int32_t>> alpha_3_1({{61, 8}});
+const std::vector<std::pair<int32_t, int32_t>> alpha_4_1({{69, 8}});
+const std::vector<std::pair<int32_t, int32_t>> alpha_5_1({{77, 8}});
+const std::vector<std::pair<int32_t, int32_t>> alpha_6_1({{85, 8}});
+const std::vector<std::pair<int32_t, int32_t>> alpha_7_1({{93, 8}});
+const std::vector<std::pair<int32_t, int32_t>> alpha_8_1({{101, 8}});
+const std::vector<std::pair<int32_t, int32_t>> alpha_9_1({{109, 8}});
+// Ionospheric Delay Correction Model Parameters End
+// BDT-UTC Time Offset Parameters (97 bits)
+const std::vector<std::pair<int32_t, int32_t>> A_0UTC_1({{117, 16}});
+const std::vector<std::pair<int32_t, int32_t>> A_1UTC_1({{133, 13}});
+const std::vector<std::pair<int32_t, int32_t>> A_2UTC_1({{146, 7}});
+const std::vector<std::pair<int32_t, int32_t>> dt_LS_1({{153, 8}});
+const std::vector<std::pair<int32_t, int32_t>> t_ot_1({{161, 16}});
+const std::vector<std::pair<int32_t, int32_t>> WN_ot_1({{177, 13}});
+const std::vector<std::pair<int32_t, int32_t>> WN_LSF_1({{190, 13}});
+const std::vector<std::pair<int32_t, int32_t>> DN_1({{203, 3}});
+const std::vector<std::pair<int32_t, int32_t>> dt_LSF_1({{206, 8}});
+// BDT-UTC Time Offset Parameters End
+const std::vector<std::pair<int32_t, int32_t>> Rev_1({{214, 27}});
+
+
+// Type 2 (264 bits)
+const std::vector<std::pair<int32_t, int32_t>> PageId_2({{1, 6}});
+const std::vector<std::pair<int32_t, int32_t>> HS_2({{7, 2}});
+const std::vector<std::pair<int32_t, int32_t>> DIF_2({{9, 1}});
+const std::vector<std::pair<int32_t, int32_t>> SIF_2({{10, 1}});
+const std::vector<std::pair<int32_t, int32_t>> AIF_2({{11, 1}});
+const std::vector<std::pair<int32_t, int32_t>> SISMAI_2({{12, 4}});
+// SISAI_OC (22 bits)
+const std::vector<std::pair<int32_t, int32_t>> t_op_2({{16, 11}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_ocb_2({{27, 5}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_oc1_2({{32, 3}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_oc2_2({{35, 3}});
+// SISAI_OC End
+const std::vector<std::pair<int32_t, int32_t>> WN_a_2({{38, 13}});
+const std::vector<std::pair<int32_t, int32_t>> t_oa_2({{51, 8}});
+// Reduced Almanac Parameters Sat 1(38 bits)
+const std::vector<std::pair<int32_t, int32_t>> PRN_a1_2({{59, 6}});
+const std::vector<std::pair<int32_t, int32_t>> SatType1_2({{65, 2}});
+const std::vector<std::pair<int32_t, int32_t>> delta_A1_2({{67, 8}});
+const std::vector<std::pair<int32_t, int32_t>> Omega_01_2({{75, 7}});
+const std::vector<std::pair<int32_t, int32_t>> Phi_01_2({{82, 7}});
+const std::vector<std::pair<int32_t, int32_t>> Health1_2({{89, 8}});
+// Reduced Almanac Parameters End
+// Reduced Almanac Parameters Sat 2(38 bits)
+const std::vector<std::pair<int32_t, int32_t>> PRN_a2_2({{97, 6}});
+const std::vector<std::pair<int32_t, int32_t>> SatType2_2({{103, 2}});
+const std::vector<std::pair<int32_t, int32_t>> delta_A2_2({{105, 8}});
+const std::vector<std::pair<int32_t, int32_t>> Omega_02_2({{113, 7}});
+const std::vector<std::pair<int32_t, int32_t>> Phi_02_2({{120, 7}});
+const std::vector<std::pair<int32_t, int32_t>> Health2_2({{127, 8}});
+// Reduced Almanac Parameters End
+// Reduced Almanac Parameters Sat 3(38 bits)
+const std::vector<std::pair<int32_t, int32_t>> PRN_a3_2({{135, 6}});
+const std::vector<std::pair<int32_t, int32_t>> SatType3_2({{141, 2}});
+const std::vector<std::pair<int32_t, int32_t>> delta_A3_2({{143, 8}});
+const std::vector<std::pair<int32_t, int32_t>> Omega_03_2({{151, 7}});
+const std::vector<std::pair<int32_t, int32_t>> Phi_03_2({{158, 7}});
+const std::vector<std::pair<int32_t, int32_t>> Health3_2({{165, 8}});
+// Reduced Almanac Parameters End
+// Reduced Almanac Parameters Sat 4(38 bits)
+const std::vector<std::pair<int32_t, int32_t>> PRN_a4_2({{173, 6}});
+const std::vector<std::pair<int32_t, int32_t>> SatType4_2({{179, 2}});
+const std::vector<std::pair<int32_t, int32_t>> delta_A4_2({{181, 8}});
+const std::vector<std::pair<int32_t, int32_t>> Omega_04_2({{189, 7}});
+const std::vector<std::pair<int32_t, int32_t>> Phi_04_2({{196, 7}});
+const std::vector<std::pair<int32_t, int32_t>> Health4_2({{203, 8}});
+// Reduced Almanac Parameters End
+const std::vector<std::pair<int32_t, int32_t>> Rev_2({{211, 30}});
+
+
+// Type 3 (264 bits)
+const std::vector<std::pair<int32_t, int32_t>> PageId_3({{1, 6}});
+const std::vector<std::pair<int32_t, int32_t>> HS_3({{7, 2}});
+const std::vector<std::pair<int32_t, int32_t>> DIF_3({{9, 1}});
+const std::vector<std::pair<int32_t, int32_t>> SIF_3({{10, 1}});
+const std::vector<std::pair<int32_t, int32_t>> AIF_3({{11, 1}});
+const std::vector<std::pair<int32_t, int32_t>> SISMAI_3({{12, 4}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_oe_3({{16, 5}});
+// EOP Parameters (138 bits)
+const std::vector<std::pair<int32_t, int32_t>> t_EOP_3({{21, 16}});
+const std::vector<std::pair<int32_t, int32_t>> PM_X_3({{37, 21}});
+const std::vector<std::pair<int32_t, int32_t>> PM_X_dot_3({{58, 15}});
+const std::vector<std::pair<int32_t, int32_t>> PM_Y_3({{73, 21}});
+const std::vector<std::pair<int32_t, int32_t>> PM_Y_dot_3({{94, 15}});
+const std::vector<std::pair<int32_t, int32_t>> dUT1_3({{109, 31}});
+const std::vector<std::pair<int32_t, int32_t>> dUT1_dot_3({{140, 19}});
+// EOP Parameters End
+// BGTO Parameters (68 bits)
+const std::vector<std::pair<int32_t, int32_t>> GNSS_ID_3({{159, 3}});
+const std::vector<std::pair<int32_t, int32_t>> WN_0BGTO_3({{162, 13}});
+const std::vector<std::pair<int32_t, int32_t>> t_0BGTO_3({{175, 16}});
+const std::vector<std::pair<int32_t, int32_t>> A_0BGTO_3({{191, 16}});
+const std::vector<std::pair<int32_t, int32_t>> A_1BGTO_3({{207, 13}});
+const std::vector<std::pair<int32_t, int32_t>> A_2BGTO_3({{220, 7}});
+// BGTO Parameters End
+const std::vector<std::pair<int32_t, int32_t>> Rev_3({{227, 14}});
+
+
+// Type 4 (264 bits)
+const std::vector<std::pair<int32_t, int32_t>> PageId_4({{1, 6}});
+const std::vector<std::pair<int32_t, int32_t>> HS_4({{7, 2}});
+const std::vector<std::pair<int32_t, int32_t>> DIF_4({{9, 1}});
+const std::vector<std::pair<int32_t, int32_t>> SIF_4({{10, 1}});
+const std::vector<std::pair<int32_t, int32_t>> AIF_4({{11, 1}});
+const std::vector<std::pair<int32_t, int32_t>> SISMAI_4({{12, 4}});
+// SISAI_OC (22 bits)
+const std::vector<std::pair<int32_t, int32_t>> t_op_4({{16, 11}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_ocb_4({{27, 5}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_oc1_4({{32, 3}});
+const std::vector<std::pair<int32_t, int32_t>> SISAI_oc2_4({{35, 3}});
+// SISAI_OC End
+// Midi Almanac Parameters (156 bits)
+const std::vector<std::pair<int32_t, int32_t>> PRN_a_4({{38, 6}});
+const std::vector<std::pair<int32_t, int32_t>> SatType_4({{44, 2}});
+const std::vector<std::pair<int32_t, int32_t>> WN_a_4({{46, 13}});
+const std::vector<std::pair<int32_t, int32_t>> t_oa_4({{59, 8}});
+const std::vector<std::pair<int32_t, int32_t>> e_4({{67, 11}});
+const std::vector<std::pair<int32_t, int32_t>> delta_i_4({{78, 11}});
+const std::vector<std::pair<int32_t, int32_t>> sqrt_A_4({{89, 17}});
+const std::vector<std::pair<int32_t, int32_t>> Omega_0_4({{106, 16}});
+const std::vector<std::pair<int32_t, int32_t>> Omega_dot_4({{122, 11}});
+const std::vector<std::pair<int32_t, int32_t>> omega_4({{133, 16}});
+const std::vector<std::pair<int32_t, int32_t>> M_0_4({{149, 16}});
+const std::vector<std::pair<int32_t, int32_t>> a_f0_4({{165, 11}});
+const std::vector<std::pair<int32_t, int32_t>> a_f1_4({{176, 10}});
+const std::vector<std::pair<int32_t, int32_t>> Health_4({{186, 8}});
+// Midi Almanac Parameters End
+const std::vector<std::pair<int32_t, int32_t>> Rev_4({{194, 47}});             
 
 
 
