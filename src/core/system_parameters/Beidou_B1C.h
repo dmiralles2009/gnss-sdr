@@ -70,6 +70,9 @@ const int32_t BEIDOU_B1C_WEIL_N_SECONDARY = 3607;
 const double BEIDOU_CNAV1_PI = 3.1415926535898;              //BeiDou CNAV1 Pi
 const int32_t BEIDOU_CNAV1_FRAME_SYMBOLS = 1800;             //Number of symbols per string in the CNAV1 message. Include all 3 Subfarames
 const int32_t BEIDOU_CNAV1_DATA_BITS = 878;
+const int32_t BEIDOU_CNAV1_SUBFRAME_1_BITS = 14;
+const int32_t BEIDOU_CNAV1_SUBFRAME_2_BITS = 600;
+const int32_t BEIDOU_CNAV1_SUBFRAME_3_BITS = 264;
 const int32_t BEIDOU_CNAV1_CRC_BITS = 24;
 const int32_t BEIDOU_CNAV1_CRC_SEED = 0;
 const int32_t BEIDOU_CNAV1_CRC_POLY = 0x1864CFB;
@@ -306,10 +309,10 @@ const std::vector<std::pair<int32_t, int32_t>> CRC_S_2({{577, 24}});
 
 // Common
 const std::vector<std::pair<int32_t, int32_t>> CRC({{241, 24}});
+const std::vector<std::pair<int32_t, int32_t>> PageId({{1, 6}});
 
 
 // Type 1 (264 bits)
-const std::vector<std::pair<int32_t, int32_t>> PageId_1({{1, 6}});
 const std::vector<std::pair<int32_t, int32_t>> HS_1({{7, 2}});
 const std::vector<std::pair<int32_t, int32_t>> DIF_1({{9, 1}});
 const std::vector<std::pair<int32_t, int32_t>> SIF_1({{10, 1}});
@@ -348,7 +351,6 @@ const std::vector<std::pair<int32_t, int32_t>> Rev_1({{214, 27}});
 
 
 // Type 2 (264 bits)
-const std::vector<std::pair<int32_t, int32_t>> PageId_2({{1, 6}});
 const std::vector<std::pair<int32_t, int32_t>> HS_2({{7, 2}});
 const std::vector<std::pair<int32_t, int32_t>> DIF_2({{9, 1}});
 const std::vector<std::pair<int32_t, int32_t>> SIF_2({{10, 1}});
@@ -398,7 +400,6 @@ const std::vector<std::pair<int32_t, int32_t>> Rev_2({{211, 30}});
 
 
 // Type 3 (264 bits)
-const std::vector<std::pair<int32_t, int32_t>> PageId_3({{1, 6}});
 const std::vector<std::pair<int32_t, int32_t>> HS_3({{7, 2}});
 const std::vector<std::pair<int32_t, int32_t>> DIF_3({{9, 1}});
 const std::vector<std::pair<int32_t, int32_t>> SIF_3({{10, 1}});
@@ -426,7 +427,6 @@ const std::vector<std::pair<int32_t, int32_t>> Rev_3({{227, 14}});
 
 
 // Type 4 (264 bits)
-const std::vector<std::pair<int32_t, int32_t>> PageId_4({{1, 6}});
 const std::vector<std::pair<int32_t, int32_t>> HS_4({{7, 2}});
 const std::vector<std::pair<int32_t, int32_t>> DIF_4({{9, 1}});
 const std::vector<std::pair<int32_t, int32_t>> SIF_4({{10, 1}});
