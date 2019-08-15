@@ -39,7 +39,9 @@ Beidou_Cnav1_Ephemeris::Beidou_Cnav1_Ephemeris()
 {
 	// Other values
 	i_satellite_PRN = 0;
-	SOW = 0.0;
+	//SOW = 0.0;
+	SOH = 0.0;
+	HOW = 0.0;
 	i_BDS_week = 0;
 
 	// Satellite Health Satus

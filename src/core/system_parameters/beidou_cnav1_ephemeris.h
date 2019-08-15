@@ -47,7 +47,9 @@ class Beidou_Cnav1_Ephemeris
 public:
 	// Other values
 	unsigned int i_satellite_PRN;	//Pseudo-Random Noise, Satellite ID
-	double SOW;			//Seconds of week [s]
+	//double SOW;			//Seconds of week [s]
+	double SOH;			//Seconds of Hour [s]
+	double HOW;			//Hours of week [s]
 	int i_BDS_week;			//Week number [week]
 	double Rev;			//Unspecified in ICD. Probably Reserved
 
