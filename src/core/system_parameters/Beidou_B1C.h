@@ -76,6 +76,8 @@ const int32_t BEIDOU_CNAV1_SUBFRAME_3_BITS = 264;
 const int32_t BEIDOU_CNAV1_CRC_BITS = 24;
 const int32_t BEIDOU_CNAV1_CRC_SEED = 0;
 const int32_t BEIDOU_CNAV1_CRC_POLY = 0x1864CFB;
+const int32_t EPHEMERIS_REFERENCE_TIME_SCALE_FACTOR = 300;
+const int32_t SECONDS_OF_HOUR_SCALE_FACTOR = 18;
 
 
 //!====================================PRIMARY CODE PARAMETERS OF B1C DATA COMPONENTS=============================================

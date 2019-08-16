@@ -234,7 +234,7 @@ int32_t Beidou_Cnav1_Navigation_Message::frame_decoder(std::string const &frame_
     	//===============================================Decode string message of Subframe 1==============================================
     	
     	cnav1_ephemeris.i_satellite_PRN = static_cast<uint32_t>(read_navigation_unsigned(subframe1, PRN));
-    	cnav1_ephemeris.SOH = static_cast<uint32_t>(read_navigation_unsigned(subframe1, SOH)) * 18;   ///Scalling factor= 18, Unit= [s]
+    	cnav1_ephemeris.SOH = static_cast<uint32_t>(read_navigation_unsigned(subframe1, SOH)) * SECONDS_OF_HOUR_SCALE_FACTOR;   ///Scalling factor= 18, Unit= [s]
     	flag_TOW_set = true;
     	flag_TOW_SF_1 = true;
     	flag_ephemeris_mes_SF1 = true;
@@ -249,7 +249,7 @@ int32_t Beidou_Cnav1_Navigation_Message::frame_decoder(std::string const &frame_
     	cnav1_ephemeris.IODE = static_cast<double>(read_navigation_unsigned(subframe2, IODE_S_2));
     	
         // Ephemeris I Start
-        cnav1_ephemeris.t_oe = static_cast<double>(read_navigation_unsigned(subframe2, t_oe_S_2)) * 300;                              //[s] effective range 0~604500
+        cnav1_ephemeris.t_oe = static_cast<double>(read_navigation_unsigned(subframe2, t_oe_S_2)) * EPHEMERIS_REFERENCE_TIME_SCALE_FACTOR;                              //[s] effective range 0~604500
         cnav1_ephemeris.SatType = static_cast<double>(read_navigation_unsigned(subframe2, SatType_S_2));                              //[dimensionless] binary, 01:GEO, 10:IGSO, 11:MEO, 00:Reserved
         cnav1_ephemeris.dA = static_cast<double>(read_navigation_signed(subframe2, dA_S_2)) * TWO_N9;                                 //[m] reference MEO: 27906100m, IGSO/GEO: 42162200m
         cnav1_ephemeris.A_dot = static_cast<double>(read_navigation_signed(subframe2, A_dot_S_2)) * TWO_N21;                          //[m/s]
@@ -550,7 +550,7 @@ bool Beidou_Cnav1_Navigation_Message::have_new_ephemeris()  //Check if we have a
                     flag_all_ephemeris = true;
                     // Update the time of ephemeris information
                     d_previous_tb = cnav1_ephemeris.IODE;
-                    DLOG(INFO) << "Beidou Cnav1 Ephemeris from Subframe 2 have been received and belong to the same batch" << std::endl;
+                    DLOG(INFO) << "BeiDou Cnav1 Ephemeris from Subframe 2 have been received and belong to the same batch" << std::endl;
                     new_eph = true;
                 }
         }
