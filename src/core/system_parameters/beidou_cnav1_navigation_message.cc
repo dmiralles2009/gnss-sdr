@@ -160,9 +160,9 @@ int64_t Beidou_Cnav1_Navigation_Message::read_navigation_signed(std::bitset<subf
     return (sign * value);
 }
 
-bool Beidou_Cnav1_Navigation_Message::crc_test(std::bitset<BEIDOU_CNAV1_DATA_BITS> bits, uint32_t crc_decoded)
+bool Beidou_Cnav1_Navigation_Message::crc_test_for_subframe_2(std::bitset<BEIDOU_CNAV1_SUBFRAME_2_BITS> bits, uint32_t crc_decoded)
 {
-    Crc_Beidou_Cnav1_type Crc_Beidou_Cnav1;
+    Crc_Beidou_Cnav1_type Crc_Beidou_Cnav1_subframe_2;
 
     uint32_t crc_computed;
 
@@ -172,8 +172,33 @@ bool Beidou_Cnav1_Navigation_Message::crc_test(std::bitset<BEIDOU_CNAV1_DATA_BIT
     std::reverse(bytes.begin(), bytes.end());
 
     // Only include data without 3 lsb from crc
-    Crc_Beidou_Cnav1.process_bytes(bytes.data(), BEIDOU_CNAV1_DATA_BYTES - 3);
-    crc_computed = Crc_Beidou_Cnav1.checksum();
+    Crc_Beidou_Cnav1_subframe_2.process_bytes(bytes.data(), BEIDOU_CNAV1_SUBFRAME_2_BYTES - 3);
+    crc_computed = Crc_Beidou_Cnav1_subframe_2.checksum();
+
+    if (crc_decoded == crc_computed)
+        {
+            return true;
+        }
+    else
+        {
+            return false;
+        }
+}
+
+bool Beidou_Cnav1_Navigation_Message::crc_test_for_subframe_3(std::bitset<BEIDOU_CNAV1_SUBFRAME_3_BITS> bits, uint32_t crc_decoded)
+{
+    Crc_Beidou_Cnav1_type Crc_Beidou_Cnav1_subframe_3;
+
+    uint32_t crc_computed;
+
+    boost::dynamic_bitset<uint8_t> frame_bits(std::string(bits.to_string()));
+    std::vector<uint8_t> bytes;
+    boost::to_block_range(frame_bits, std::back_inserter(bytes));
+    std::reverse(bytes.begin(), bytes.end());
+
+    // Only include data without 3 lsb from crc
+    Crc_Beidou_Cnav1_subframe_3.process_bytes(bytes.data(), BEIDOU_CNAV1_SUBFRAME_3_BYTES - 3);
+    crc_computed = Crc_Beidou_Cnav1_subframe_3.checksum();
 
     if (crc_decoded == crc_computed)
         {
@@ -206,7 +231,6 @@ int32_t Beidou_Cnav1_Navigation_Message::frame_decoder(std::string const &frame_
     
     
     	
-    	/* TO DO: Checking CRC for both subframes
     	//! CNAV1 navigation message have CRC in two subframes i.e in Subframe 2 and Subframe 3
     	
     	// Gets the crc data for comparison, last 24 bits from 600 bit of Subframe 2
@@ -215,21 +239,21 @@ int32_t Beidou_Cnav1_Navigation_Message::frame_decoder(std::string const &frame_
     	std::bitset<BEIDOU_CNAV1_CRC_BITS> checksum_sf_3(subframe3.substr(240, 24));
 
     	// Perform data verification and exit code if error in bit sequence
-    	flag_crc_test_sf_2 = crc_test(subframe2, checksum_sf_2.to_ulong());
-    	flag_crc_test_sf_3 = crc_test(subframe3, checksum_sf_3.to_ulong());
+    	flag_crc_test_sf_2 = crc_test_for_subframe_2(subframe2, checksum_sf_2.to_ulong());
+    	flag_crc_test_sf_3 = crc_test_for_subframe_3(subframe3, checksum_sf_3.to_ulong());
 
     	if (flag_crc_test_sf_2 == false && flag_crc_test_sf_3 == false)
         	return 0;
-        */
         
-        // Gets the crc data for comparison, last 24 bits from 288 bit data frame
+        
+        /*// Gets the crc data for comparison, last 24 bits from 288 bit data frame
     	std::bitset<BEIDOU_CNAV1_CRC_BITS> checksum(frame_string.substr(854, 24));
 
     	// Perform data verification and exit code if error in bit sequence
     	flag_crc_test = crc_test(frame_bits, checksum.to_ulong());
 
     	if (flag_crc_test == false)
-        	return 0;
+        	return 0;*/
     	
     	//===============================================Decode string message of Subframe 1==============================================
     	

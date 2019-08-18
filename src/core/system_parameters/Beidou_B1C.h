@@ -69,10 +69,12 @@ const int32_t BEIDOU_B1C_WEIL_N_SECONDARY = 3607;
 
 const double BEIDOU_CNAV1_PI = 3.1415926535898;              //BeiDou CNAV1 Pi
 const int32_t BEIDOU_CNAV1_FRAME_SYMBOLS = 1800;             //Number of symbols per string in the CNAV1 message. Include all 3 Subfarames
-const int32_t BEIDOU_CNAV1_DATA_BITS = 878;
-const int32_t BEIDOU_CNAV1_SUBFRAME_1_BITS = 14;
-const int32_t BEIDOU_CNAV1_SUBFRAME_2_BITS = 600;
-const int32_t BEIDOU_CNAV1_SUBFRAME_3_BITS = 264;
+const int32_t BEIDOU_CNAV1_DATA_BITS = 878;                  
+const int32_t BEIDOU_CNAV1_SUBFRAME_1_BITS = 14;	     //Length of Subframe 1 in BITS
+const int32_t BEIDOU_CNAV1_SUBFRAME_2_BITS = 600;	     //Length of Subframe 2 in BITS
+const int32_t BEIDOU_CNAV1_SUBFRAME_3_BITS = 264;            //Length of Subframe 3 in BITS
+const int32_t BEIDOU_CNAV1_SUBFRAME_2_BYTES = 75;            //Length of Subframe 2 in BYTES
+const int32_t BEIDOU_CNAV1_SUBFRAME_3_BYTES = 33;            //Length of Subframe 3 in BYTES
 const int32_t BEIDOU_CNAV1_CRC_BITS = 24;
 const int32_t BEIDOU_CNAV1_CRC_SEED = 0;
 const int32_t BEIDOU_CNAV1_CRC_POLY = 0x1864CFB;

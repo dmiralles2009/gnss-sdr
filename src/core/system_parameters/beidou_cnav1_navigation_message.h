@@ -114,10 +114,16 @@ public:
     double crc_compute;  //!< Value of the computed CRC
 
     /*!
-     * \brief Compute CRC for BEIDOU CNAV1 strings
+     * \brief Compute CRC for BEIDOU CNAV1 Subframe 2 strings
      * \param bits Bits of the string message where to compute CRC
      */
-    bool crc_test(std::bitset<BEIDOU_CNAV1_DATA_BITS> bits, uint32_t crc_decoded);
+    bool crc_test_for_subframe_2(std::bitset<BEIDOU_CNAV1_SUBFRAME_2_BITS> bits, uint32_t crc_decoded);
+    
+    /*!
+     * \brief Compute CRC for BEIDOU CNAV1 Subframe 3 strings
+     * \param bits Bits of the string message where to compute CRC
+     */
+    bool crc_test_for_subframe_3(std::bitset<BEIDOU_CNAV1_SUBFRAME_3_BITS> bits, uint32_t crc_decoded);
 
     /*!
      * \brief Computes the frame number being decoded given the satellite slot number
