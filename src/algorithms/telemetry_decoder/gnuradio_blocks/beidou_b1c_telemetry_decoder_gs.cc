@@ -260,7 +260,7 @@ int beidou_b1c_telemetry_decoder_gs::general_work(int noutput_items __attribute_
                     d_flag_valid_word = true;
                 }
         }
-    else  //if there is not a new preamble, we define the TOW of the current symbol
+    else  
         {
             if (d_flag_valid_word)
                 {
