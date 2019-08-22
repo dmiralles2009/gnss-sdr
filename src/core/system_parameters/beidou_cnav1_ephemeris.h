@@ -132,7 +132,7 @@ public:
             };
     	// Others values
     	archive& make_nvp("i_satellite_PRN", i_satellite_PRN);
-    	archive& make_nvp("SOW", SOW);
+    	archive& make_nvp("SOH", SOH);
     	archive& make_nvp("WN", i_BDS_week);
 
     	// Satellite Heath Status

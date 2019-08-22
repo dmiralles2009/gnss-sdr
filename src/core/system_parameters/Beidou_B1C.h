@@ -75,11 +75,14 @@ const int32_t BEIDOU_CNAV1_SUBFRAME_2_BITS = 600;	     //Length of Subframe 2 in
 const int32_t BEIDOU_CNAV1_SUBFRAME_3_BITS = 264;            //Length of Subframe 3 in BITS
 const int32_t BEIDOU_CNAV1_SUBFRAME_2_BYTES = 75;            //Length of Subframe 2 in BYTES
 const int32_t BEIDOU_CNAV1_SUBFRAME_3_BYTES = 33;            //Length of Subframe 3 in BYTES
+const int32_t BEIDOU_CNAV1_TELEMETRY_SYMBOLS_PER_BIT = 1;    //spb
 const int32_t BEIDOU_CNAV1_CRC_BITS = 24;
 const int32_t BEIDOU_CNAV1_CRC_SEED = 0;
 const int32_t BEIDOU_CNAV1_CRC_POLY = 0x1864CFB;
 const int32_t EPHEMERIS_REFERENCE_TIME_SCALE_FACTOR = 300;
 const int32_t SECONDS_OF_HOUR_SCALE_FACTOR = 18;
+const int32_t BEIDOU_CNAV1_BDT2GPST_LEAP_SEC_OFFSET = 14;    //!< Number of leap seconds passed from the start of the GPS epoch up to the start of BeiDou epoch
+const int32_t BEIDOU_CNAV1_BDT2GPST_WEEK_NUM_OFFSET = 1356;  //!< Number of weeks passed from the start of the GPS epoch up to the start of BeiDou epoch
 
 
 //!====================================PRIMARY CODE PARAMETERS OF B1C DATA COMPONENTS=============================================

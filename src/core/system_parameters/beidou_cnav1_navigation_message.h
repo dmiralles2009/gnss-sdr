@@ -109,9 +109,7 @@ public:
     double d_previous_Na[BEIDOU_B1C_NBR_SATS];  //!< Previous time for almanac of the Beidou_Cnav1_Almanac object
 
     double temp;  //!< Temporary value
-    template<long unsigned int subframe_size>   //to use geeneralized size according to each subframe size in "read_navigation_bool" and "read_navigation_unsigned" functions 
 
-    double crc_compute;  //!< Value of the computed CRC
 
     /*!
      * \brief Compute CRC for BEIDOU CNAV1 Subframe 2 strings
@@ -187,9 +185,13 @@ public:
     int32_t frame_decoder(std::string const &frame_string);
 
 private:
-    uint64_t read_navigation_unsigned(std::bitset<subframe_size> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
-    int64_t read_navigation_signed(std::bitset<subframe_size> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
-    bool read_navigation_bool(std::bitset<subframe_size> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    uint64_t read_navigation_unsigned_SF_1(std::bitset<BEIDOU_CNAV1_SUBFRAME_1_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    int64_t read_navigation_signed_SF_1(std::bitset<BEIDOU_CNAV1_SUBFRAME_1_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    uint64_t read_navigation_unsigned_SF_2(std::bitset<BEIDOU_CNAV1_SUBFRAME_2_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    int64_t read_navigation_signed_SF_2(std::bitset<BEIDOU_CNAV1_SUBFRAME_2_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    uint64_t read_navigation_unsigned_SF_3(std::bitset<BEIDOU_CNAV1_SUBFRAME_3_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    int64_t read_navigation_signed_SF_3(std::bitset<BEIDOU_CNAV1_SUBFRAME_3_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
+    bool read_navigation_bool(std::bitset<BEIDOU_CNAV1_DATA_BITS> const &bits, const std::vector<std::pair<int32_t, int32_t>> &parameter);
 };
 
 #endif
