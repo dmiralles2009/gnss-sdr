@@ -2333,25 +2333,6 @@ Gnss_Signal GNSSFlowgraph::search_next_signal(const std::string& searched_signal
                 {
                     available_BDS_C1_signals_.push_back(result);
                 }
-            if (tracked)
-                {
-										// Do nothing as of now
-/*
-                    if (configuration_->property("Channels_B1.count", 0) > 0)
-                        {
-                            for (unsigned int ch = 0; ch < channels_count_; ch++)
-                                {
-                                    if ((channels_[ch]->get_signal().get_satellite() == result.get_satellite()) and (channels_[ch]->get_signal().get_signal_str().compare("B1") != 0)) untracked_satellite = false;
-        }
-                            if (untracked_satellite)
-                                {
-                                    Gnss_Signal gs = Gnss_Signal(result.get_satellite(), "B1");
-                                    available_BDS_1G_signals_.remove(gs);
-                                    available_GLO_1G_signals_.push_front(gs);
-}
-                        }
-*/
-                }
             break;
 
         default:

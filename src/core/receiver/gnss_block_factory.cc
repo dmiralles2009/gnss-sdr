@@ -41,6 +41,7 @@
 #include "beamformer_filter.h"
 #include "beidou_b1c_dll_pll_tracking.h"
 #include "beidou_b1c_pcps_acquisition.h"
+#include "beidou_b1c_telemetry_decoder.h"
 #include "beidou_b1i_dll_pll_tracking.h"
 #include "beidou_b1i_pcps_acquisition.h"
 #include "beidou_b1i_telemetry_decoder.h"
@@ -2030,7 +2031,12 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                 out_streams));
             block = std::move(block_);
         }
-    //TODO add TELEMETRY DECODERS block for Beidou B1C here.
+    else if (implementation == "BEIDOU_B1C_Telemetry_Decoder")
+        {
+            std::unique_ptr<GNSSBlockInterface> block_(new BeidouB1cTelemetryDecoder(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
     // OBSERVABLES -----------------------------------------------------------------
     else if ((implementation == "Hybrid_Observables") || (implementation == "GPS_L1_CA_Observables") || (implementation == "GPS_L2C_Observables") ||
              (implementation == "Galileo_E5A_Observables"))
@@ -2471,7 +2477,12 @@ std::unique_ptr<TelemetryDecoderInterface> GNSSBlockFactory::GetTlmBlock(
                 out_streams));
             block = std::move(block_);
         }
-    //TODO add for Beidou B1C here.
+    else if (implementation == "BEIDOU_B1C_Telemetry_Decoder")
+        {
+            std::unique_ptr<TelemetryDecoderInterface> block_(new BeidouB1cTelemetryDecoder(configuration.get(), role, in_streams,
+                out_streams));
+            block = std::move(block_);
+        }
     else
         {
             // Log fatal. This causes execution to stop.
