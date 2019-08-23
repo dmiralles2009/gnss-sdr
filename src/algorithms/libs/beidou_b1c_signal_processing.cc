@@ -577,9 +577,6 @@ void beidou_b1cd_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
 	
    	 // This function is based on the GNU software GPS for MATLAB in Kay Borre's book
     	
-	/*const uint32_t _codeLength = BEIDOU_B1Cp_CODE_LENGTH_CHIPS;
-    std::unique_ptr<int> _signal_B1C_pilot{new int[_codeLength]};
-    gsl::span<int> b1c_data_primary_code_chips(_signal_B1C_pilot, _codeLength);*/
     	
     	auto* b1c_data_primary_code_chips = static_cast<int32_t*>(volk_gnsssdr_malloc(static_cast<uint32_t>(BEIDOU_B1Cd_CODE_LENGTH_CHIPS) * sizeof(int32_t), volk_gnsssdr_get_alignment()));
     	const int32_t _samplesPerChip =  12;
@@ -618,8 +615,6 @@ void beidou_b1cd_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
 //! Generates complex version of sine BOC(1,1) modulated Data Code 
 void beidou_b1cd_code_gen_complex_sampled_boc_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs)
 {
-    //uint32_t _code_length =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
-    //int32_t _code[_code_length];
     
     int32_t _samplesPerCode, _codeValueIndex;
     float _ts;
@@ -755,8 +750,6 @@ void beidou_b1cp_gen_float_11(gsl::span<float> _dest, uint32_t _prn)
 //! Generates complex version of both pilot components having sine BOC(6,1) which is in Real part and sine BOC(1,1) which is in Imaginary part
 void beidou_b1cp_code_gen_complex_sampled_boc_61_11(gsl::span<std::complex<float>> _dest,uint32_t _prn, int32_t _fs)
 {
-    //uint32_t _code_length =12 * BEIDOU_B1Cd_CODE_LENGTH_CHIPS;
-    //int32_t _code[_code_length];
     
     int32_t _samplesPerCode, _codeValueIndex;
     float _ts;
